@@ -14,6 +14,7 @@ use routes::{
     internet_news::render_legacy_article,
     markets::render_market,
     proxy::image_proxy,
+    rss::render_rss,
     search::{render_search, render_section, render_topic},
     settings::handle_settings,
 };
@@ -190,6 +191,22 @@ fn main() {
                 };
             }
             "/favicon.ico" => Err(ApiError::Empty),
+            "/rss.xml" => {
+                match render_rss(&client) {
+                    Ok(body) => {
+                        return rouille::Response {
+                            status_code: 200,
+                            headers: vec![
+                                ("Content-Type".into(), "application/xml".into()),
+                                ("Cache-Control".into(), "public, max-age=300".into()),
+                            ],
+                            data: rouille::ResponseBody::from_string(body),
+                            upgrade: None,
+                        };
+                    }
+                    Err(err) => Err(err),
+                }
+            },
             _ => {
                 if let Some(section) = sections_by_id.get(path.as_str()) {
                     let offset = request
