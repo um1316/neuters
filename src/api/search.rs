@@ -11,7 +11,7 @@ pub fn fetch_articles_by_search(
     size: u32,
 ) -> ApiResult<Articles> {
     let query = format!(
-        r#"{{"keyword":"{keyword}","offset":{offset},"orderby":"display_date:desc","size":{size},"website":"reuters"}}"#
+        r#"{{"keyword":"{keyword}","offset":{offset},"orderby":"display_date:desc","size":{size},"website":"reuters","arc-site":"reuters"}}"#
     );
 
     fetch(client, API_URL, &query)

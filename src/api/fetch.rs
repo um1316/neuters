@@ -15,21 +15,27 @@ where
         (200..300).contains(&status)
     }
 
+    println!("Fetching URL: {}", url);
+    println!("With query: {}", query);
+
     let response = get(client, url).query("query", query).call()?;
+    let status = response.status();
+    println!("Response status: {}", status);
 
-    if (300..400).contains(&response.status()) {
+    if (300..400).contains(&status) {
         let target = response.header("Location").unwrap_or("/");
-
-        return Err(ApiError::Redirect(response.status(), target.to_string()));
+        return Err(ApiError::Redirect(status, target.to_string()));
     }
-    if !is_success(response.status()) {
-        return Err(ApiError::External(
-            response.status(),
-            response.into_string().unwrap(),
-        ));
+    if !is_success(status) {
+        let error_body = response.into_string().unwrap();
+        println!("Error response body: {}", error_body);
+        return Err(ApiError::External(status, error_body));
     };
 
-    let response = response.into_json::<ApiResponse<T>>()?;
+    let response_text = response.into_string()?;
+    println!("Response body: {}", response_text);
+    
+    let response = serde_json::from_str::<ApiResponse<T>>(&response_text)?;
 
     if !is_success(response.status_code) || response.result.is_none() {
         Err(ApiError::External(

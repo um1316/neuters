@@ -1,18 +1,23 @@
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Articles {
     pub pagination: Pagination,
     pub articles: Option<Box<[Article]>>,
     pub topics: Option<Box<[Topic]>>,
+    pub response_time: Option<u64>,
+    #[serde(rename = "_id")]
+    pub id: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Pagination {
     pub total_size: Option<u32>,
+    pub expected_size: Option<u32>,
+    pub orderby: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Article {
     pub title: String,
     pub subtype: Option<String>,
@@ -24,7 +29,7 @@ pub struct Article {
     pub published_time: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Image {
     pub caption: Option<String>,
     pub width: u16,
@@ -32,7 +37,7 @@ pub struct Image {
     pub resizer_url: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct ApiResponse<T> {
     #[serde(rename = "statusCode")]
     pub status_code: u16,
@@ -40,14 +45,14 @@ pub struct ApiResponse<T> {
     pub result: Option<T>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Topic {
     pub name: String,
     pub topic_url: Option<String>,
     pub byline: String,
 }
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Section {
     pub name: String,
     pub id: String,
